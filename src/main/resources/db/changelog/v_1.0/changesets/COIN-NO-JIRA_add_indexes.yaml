@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - changeSet:
+      id: mts-COIN-NO-JIRA-add-indexes
+      author: a.lobanov
+      changes:
+        - sqlFile:
+            path: db/changelog/v_1.0/scripts/COIN-NO-JIRA_add_indexes.sql

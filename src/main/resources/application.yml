@@ -1,0 +1,92 @@
+server:
+  port: ${SERVER_PORT}
+
+spring:
+  application:
+    name: adapter-mts
+    version: @project.version@
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  cloud:
+    openfeign:
+      client:
+        config:
+          # общие для всех Feign-клиентов (время соединения и время чтения)
+          default:
+            connect-timeout: ${CONNECT_TIMEOUT:2000}
+            read-timeout: ${READ_TIMEOUT:5000}
+            logger-level: basic
+          coinpay-rate-api:
+            connect-timeout: ${COINPAY_RATE_CONNECT_TIMEOUT:2000}
+            read-timeout: ${COINPAY_RATE_READ_TIMEOUT:5000}
+          coinpay-transfer-api:
+            connect-timeout: ${COINPAY_TRANSFER_CONNECT_TIMEOUT:2000}
+            read-timeout: ${COINPAY_TRANSFER_READ_TIMEOUT:10000}
+
+springdoc:
+  swagger-ui:
+    enabled: false
+
+mts-adapter:
+  rest:
+    coinpay-rate:
+      url: ${COINPAY_RATE_URL}
+
+    coinpay-transfer:
+      url: ${TRANSFER_URL}
+
+    retry:
+      period: ${RETRY_PERIOD:1000}
+      max-period: ${RETRY_MAX_PERIOD:3000}
+      max-attempts: ${RETRY_MAX_ATTEMPTS:3}
+
+  params:
+    coinpay-rate:
+      # конфиги для обращения в coinpay для получения курсов
+      token: ${COINPAY_RATE_TOKEN}
+      mts-partner-id: ${MTS_PARTNER_ID}
+
+    rate:
+      # фиксированный курс вместо обращения в CoinPay
+      hard-rate-value: ${HARD_RATE_VALUE}
+      hard-rate-enable: ${HARD_RATE_ENABLED:false}
+      # допустимые границы курса
+      lower-bound: ${RATE_LOWER_BOUND}
+      upper-bound: ${RATE_UPPER_BOUND}
+
+    coinpay-transfer:
+      # креды терминала для HMAC-подписи Transfer API
+      terminal-id: ${TRANSFER_TERMINAL_ID}
+      secret: ${TRANSFER_SECRET}
+      # окно исполнения операции в coinPay (executionDeadline), мин
+      execution-deadline-minutes: ${TRANSFER_EXECUTION_DEADLINE_MINUTES:60}
+
+    jobs-ttl:
+      cancel-expired-ttl-minutes: ${CANCEL_EXPIRED_TTL_MINUTES:30}
+
+  cache:
+    # время жизни кэша курсов CoinPay, мин
+    coinpay-rates-ttl-minutes: ${COINPAY_RATES_CACHE_TTL_MINUTES:60}
+
+  jobs:
+    # отмена переводов, зависших в статусе CREATED дольше TTL (30 мин по спеке MT)
+    cancel-expired-transfers:
+      cron: ${CANCEL_EXPIRED_CRON}
+    # отправка PROCESSING-переводов в CoinPay Transfer API
+    send-transfers:
+      cron: "${SEND_TRANSFERS_CRON}"
+    # опрос статусов отправленных переводов
+    check-transfers-status:
+      cron: "${CHECK_TRANSFERS_STATUS_CRON}"
+
+

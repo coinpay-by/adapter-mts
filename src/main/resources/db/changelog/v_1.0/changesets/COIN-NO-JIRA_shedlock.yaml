@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - changeSet:
+      id: mts-COIN-NO-JIRA-shedlock
+      author: a.lobanov
+      changes:
+        - sqlFile:
+            path: db/changelog/v_1.0/scripts/COIN-NO-JIRA_shedlock.sql

@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/v_1.0/changesets/COIN-NO-JIRA_implement_base_db_structure.yaml
+  - include:
+      file: db/changelog/v_1.0/changesets/COIN-NO-JIRA_shedlock.yaml
+  - include:
+      file: db/changelog/v_1.0/changesets/COIN-NO-JIRA_add_indexes.yaml

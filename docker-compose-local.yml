@@ -1,0 +1,16 @@
+name: adapter-mts
+
+services:
+  db:
+    image: postgres:17.2
+    volumes:
+      - adapter_mts_db_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=adapter-mts
+    ports:
+      - '5439:5432'
+
+volumes:
+  adapter_mts_db_data:
