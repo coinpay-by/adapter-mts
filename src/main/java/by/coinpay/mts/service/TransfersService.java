@@ -26,6 +26,8 @@ public class TransfersService {
 
     TransfersRepository transfersRepository;
 
+    private static final Integer ONE_DAY = 1;
+
     public boolean existsByTransactionId(UUID transactionId) {
         return transfersRepository.existsByTransactionId(transactionId);
     }
@@ -44,7 +46,7 @@ public class TransfersService {
 
     public List<Transfers> findByDate(LocalDate date) {
         OffsetDateTime from = date.atStartOfDay().atOffset(ZoneOffset.UTC);
-        OffsetDateTime to = from.plusDays(1);
+        OffsetDateTime to = from.plusDays(ONE_DAY);
         return transfersRepository.findByTransactionDateGreaterThanEqualAndTransactionDateLessThan(from, to);
     }
 
