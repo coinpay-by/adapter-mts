@@ -1,0 +1,66 @@
+data_dir = "/var/lib/vector"
+
+[sources.docker_mts]
+type = "docker_logs"
+docker_host = "unix:///var/run/docker.sock"
+include_containers = ["adapter-mts"]
+exclude_containers = ["vector"]
+
+[transforms.parse_json]
+type = "remap"
+inputs = ["docker_mts"]
+source = '''
+.message = parse_json(.message) ?? {
+  "message": .message,
+  "timestamp": now(),
+  "level": "INFO"
+}
+.container_name = split(.host, "/")[1] ?? "adapter-mts"
+'''
+
+[transforms.route_logs]
+type = "route"
+inputs = ["parse_json"]
+route.adapter-mts = 'true'
+
+[transforms.adapter-mts-transform]
+type = "remap"
+inputs = ["route_logs.adapter-mts"]
+source = '''
+.service = "adapter-mts"
+.host = .container_name
+.environment = "prod"
+.timestamp = if is_null(.message.timestamp) { now() } else { .message.timestamp }
+.level = if is_null(.message.level) { "INFO" } else { .message.level }
+.logger_name = if is_null(.message.logger_name) { "" } else { .message.logger_name }
+.thread_name = if is_null(.message.thread_name) { "" } else { .message.thread_name }
+.message = if is_string(.message) { .message } else { if is_null(.message.message) { string!(.message) } else { .message.message } }
+.line = .message
+.traceId = .message.traceId
+.spanId = .message.spanId
+.userId = .message.userId
+.ip = .message.ip
+.stacktrace = .message.stacktrace
+
+
+del(.container_created_at)
+del(.container_id)
+del(.container_name)
+del(.image)
+del(.label)
+del(.source_type)
+del(.stream)
+'''
+
+[sinks.adapter-mts]
+type = "http"
+inputs = ["adapter-mts-transform"]
+uri = "http://192.168.10.105:7280/api/v1/mts-logs/ingest"
+method = "post"
+encoding.codec = "json"
+framing.method = "newline_delimited"
+compression = "gzip"
+request.rate_limit_num = 20
+request.rate_limit_duration_secs = 1
+buffer.type = "disk"
+buffer.max_size = 268435488
