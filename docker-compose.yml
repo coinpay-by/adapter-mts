@@ -1,0 +1,82 @@
+networks:
+  mts-coinpay-net:
+    driver: bridge
+
+volumes:
+  mts-api-logs:
+  mts-vector-data:
+
+
+services:
+  adapter-mts:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PROFILE: ${SPRING_PROFILE:-prod}
+    container_name: adapter-mts
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILE:-prod}
+      SERVER_PORT: ${SERVER_PORT}
+      # БД
+      DB_URL: ${DB_URL}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      # CoinPay: курсы (Bearer) и переводы (HMAC)
+      COINPAY_RATE_URL: ${COINPAY_RATE_URL}
+      COINPAY_RATE_TOKEN: ${COINPAY_RATE_TOKEN}
+      MTS_PARTNER_ID: ${MTS_PARTNER_ID}
+      TRANSFER_URL: ${TRANSFER_URL}
+      TRANSFER_TERMINAL_ID: ${TRANSFER_TERMINAL_ID}
+      TRANSFER_SECRET: ${TRANSFER_SECRET}
+      # Курс
+      HARD_RATE_ENABLED: ${HARD_RATE_ENABLED:-false}
+      HARD_RATE_VALUE: ${HARD_RATE_VALUE}
+      RATE_LOWER_BOUND: ${RATE_LOWER_BOUND}
+      RATE_UPPER_BOUND: ${RATE_UPPER_BOUND}
+      # Джобы (cron)
+      CANCEL_EXPIRED_CRON: ${CANCEL_EXPIRED_CRON}
+      SEND_TRANSFERS_CRON: ${SEND_TRANSFERS_CRON}
+      CHECK_TRANSFERS_STATUS_CRON: ${CHECK_TRANSFERS_STATUS_CRON}
+      # TTL и кэш
+      CANCEL_EXPIRED_TTL_MINUTES: ${CANCEL_EXPIRED_TTL_MINUTES:-30}
+      COINPAY_RATES_CACHE_TTL_MINUTES: ${COINPAY_RATES_CACHE_TTL_MINUTES:-60}
+      # Таймауты Feign (мс)
+      CONNECT_TIMEOUT: ${CONNECT_TIMEOUT:-2000}
+      READ_TIMEOUT: ${READ_TIMEOUT:-5000}
+      COINPAY_RATE_CONNECT_TIMEOUT: ${COINPAY_RATE_CONNECT_TIMEOUT:-2000}
+      COINPAY_RATE_READ_TIMEOUT: ${COINPAY_RATE_READ_TIMEOUT:-5000}
+      COINPAY_TRANSFER_CONNECT_TIMEOUT: ${COINPAY_TRANSFER_CONNECT_TIMEOUT:-2000}
+      COINPAY_TRANSFER_READ_TIMEOUT: ${COINPAY_TRANSFER_READ_TIMEOUT:-10000}
+      # Retry Feign
+      RETRY_PERIOD: ${RETRY_PERIOD:-1000}
+      RETRY_MAX_PERIOD: ${RETRY_MAX_PERIOD:-2000}
+      RETRY_MAX_ATTEMPTS: ${RETRY_MAX_ATTEMPTS:-3}
+      # executionDeadline перевода (мин)
+      TRANSFER_EXECUTION_DEADLINE_MINUTES: ${TRANSFER_EXECUTION_DEADLINE_MINUTES:-60}
+      # --- Трассировка (OTLP) ---
+      # OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
+      # OTEL_SERVICE_NAME: adapter-mts
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"
+    volumes:
+      - mts-api-logs:/app/logs
+    networks:
+      - mts-coinpay-net
+  vector:
+    image: timberio/vector:0.42.0-alpine
+    container_name: mts-vector
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./config/vector.toml:/etc/vector/vector.toml:ro
+      - mts-vector-data:/var/lib/vector
+    command: [ "--config", "/etc/vector/vector.toml" ]
+    cap_add:
+      - SYS_ADMIN
+    extra_hosts:
+      - "quickwit-host:host-gateway"
+    networks:
+      - mts-coinpay-net
+    restart: unless-stopped
