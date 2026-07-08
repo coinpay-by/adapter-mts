@@ -1,4 +1,4 @@
-package by.coinpay.mts.models.dto.coinpay.rates.response;
+package by.coinpay.mts.models.dto.coinpay.rates;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

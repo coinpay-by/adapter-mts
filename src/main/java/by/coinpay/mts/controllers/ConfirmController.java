@@ -1,6 +1,6 @@
 package by.coinpay.mts.controllers;
 
-import by.coinpay.mts.models.dto.mts.transfer.MtsCreateTransactionResponseDto;
+import by.coinpay.mts.models.dto.mts.transfer.response.MtsCreateTransactionResponseDto;
 import by.coinpay.mts.service.ConfirmService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

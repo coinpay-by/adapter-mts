@@ -2,6 +2,7 @@ package by.coinpay.mts.service;
 
 import by.coinpay.mts.enums.InternalStatus;
 import by.coinpay.mts.enums.TransactionStatus;
+import by.coinpay.mts.exceptions.EntityNotFoundException;
 import by.coinpay.mts.models.entity.Transfers;
 import by.coinpay.mts.repository.TransfersRepository;
 import lombok.AccessLevel;
@@ -24,9 +25,9 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class TransfersService {
 
-    TransfersRepository transfersRepository;
+    private static final int ONE_DAY = 1;
 
-    private static final Integer ONE_DAY = 1;
+    TransfersRepository transfersRepository;
 
     public boolean existsByTransactionId(UUID transactionId) {
         return transfersRepository.existsByTransactionId(transactionId);
@@ -34,6 +35,14 @@ public class TransfersService {
 
     public Optional<Transfers> findByTransactionId(UUID transactionId) {
         return transfersRepository.findByTransactionId(transactionId);
+    }
+
+    public Transfers getByTransactionId(UUID transactionId) {
+        return findByTransactionId(transactionId)
+                .orElseThrow(() -> {
+                    log.warn("Operation with transactionId: {} not found", transactionId);
+                    return new EntityNotFoundException(transactionId.toString());
+                });
     }
 
     public List<Transfers> findNotSentCoinPay(TransactionStatus status) {
@@ -60,6 +69,7 @@ public class TransfersService {
 
     /**
      * Отменяет переводы, зависшие в статусе CREATED, одним bulk-UPDATE.
+     *
      * @return число отмененных операций
      */
     @Transactional

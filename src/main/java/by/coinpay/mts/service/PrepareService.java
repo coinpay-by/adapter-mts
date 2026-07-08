@@ -2,8 +2,8 @@ package by.coinpay.mts.service;
 
 import by.coinpay.mts.exceptions.TransferAlreadyExistsException;
 import by.coinpay.mts.mapper.TransfersMapper;
-import by.coinpay.mts.models.dto.mts.transfer.MtsCreateTransactionRequestDto;
-import by.coinpay.mts.models.dto.mts.transfer.MtsCreateTransactionResponseDto;
+import by.coinpay.mts.models.dto.mts.transfer.request.MtsCreateTransactionRequestDto;
+import by.coinpay.mts.models.dto.mts.transfer.response.MtsCreateTransactionResponseDto;
 import by.coinpay.mts.models.entity.Transfers;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

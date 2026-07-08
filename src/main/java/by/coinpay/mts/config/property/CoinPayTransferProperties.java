@@ -15,4 +15,6 @@ public class CoinPayTransferProperties {
     String terminalId;
     /** Секрет терминала для HMAC-подписи. */
     String secret;
+    /** Окно исполнения перевода (executionDeadline), минуты. */
+    int executionDeadlineMinutes;
 }

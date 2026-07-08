@@ -21,13 +21,13 @@ import org.springframework.stereotype.Component;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CancelExpiredTransfersJob {
 
+    private static final String CANCEL_EXPIRED_TRANSFERS_JOB = "cancelExpiredTransfers";
+
     TransfersService transfersService;
 
     @Value("${mts-adapter.params.jobs-ttl.cancel-expired-ttl-minutes}")
     @NonFinal
     int expiredTtlMinutes;
-
-    private static final String CANCEL_EXPIRED_TRANSFERS_JOB = "cancelExpiredTransfers";
 
     @Scheduled(cron = "${mts-adapter.jobs.cancel-expired-transfers.cron}")
     @SchedulerLock(name = CANCEL_EXPIRED_TRANSFERS_JOB)

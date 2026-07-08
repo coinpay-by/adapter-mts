@@ -1,4 +1,4 @@
-package by.coinpay.mts.models.dto.mts.transfer;
+package by.coinpay.mts.models.dto.mts.transfer.request;
 
 import by.coinpay.mts.models.dto.mts.common.AddressesDto;
 import by.coinpay.mts.models.dto.mts.common.DocumentDto;

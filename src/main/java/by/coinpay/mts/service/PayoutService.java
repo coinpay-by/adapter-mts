@@ -10,9 +10,7 @@ import by.coinpay.mts.utils.CountryCodeConverter;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -35,10 +33,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PayoutService {
-
-    @Value("${mts-adapter.params.coinpay-transfer.execution-deadline-minutes}")
-    @NonFinal
-    int executionDeadlineMinutes;
 
     CoinPayTransferClient coinPayTransferClient;
     CoinPayTransferProperties transferProperties;
@@ -89,7 +83,7 @@ public class PayoutService {
      */
     private String executionDeadline() {
         return LocalDateTime.now(ZoneOffset.UTC)
-                .plusMinutes(executionDeadlineMinutes)
+                .plusMinutes(transferProperties.getExecutionDeadlineMinutes())
                 .truncatedTo(ChronoUnit.SECONDS)
                 .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
     }

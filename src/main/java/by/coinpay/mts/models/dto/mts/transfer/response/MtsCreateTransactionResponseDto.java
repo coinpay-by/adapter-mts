@@ -1,6 +1,7 @@
-package by.coinpay.mts.models.dto.mts.response;
+package by.coinpay.mts.models.dto.mts.transfer.response;
 
 import by.coinpay.mts.models.dto.mts.ErrorDto;
+import by.coinpay.mts.models.dto.mts.common.JuridicalDto;
 import by.coinpay.mts.models.dto.mts.common.MoneyDto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -18,8 +19,18 @@ public record MtsCreateTransactionResponseDto(
         String beneficiaryAccountNumber,
         String beneficiaryPhoneNumber,
         String senderComment,
-        BeneficiaryResponseDto beneficiary,
+        Beneficiary beneficiary,
         MoneyDto money,
         ErrorDto error
 ) {
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public record Beneficiary(
+            String lastName,
+            String firstName,
+            String middleName,
+            String phoneNumber,
+            JuridicalDto juridical
+    ) {
+    }
 }

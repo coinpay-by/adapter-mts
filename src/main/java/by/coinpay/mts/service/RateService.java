@@ -8,7 +8,7 @@ import by.coinpay.mts.exceptions.ExternalException;
 import by.coinpay.mts.exceptions.RatesException;
 import by.coinpay.mts.mapper.RateMapper;
 import by.coinpay.mts.models.dto.mts.rates.request.MtsRateRequestDto;
-import by.coinpay.mts.models.dto.coinpay.rates.response.CoinPayRatesResponse;
+import by.coinpay.mts.models.dto.coinpay.rates.CoinPayRatesResponse;
 import by.coinpay.mts.models.dto.mts.rates.response.MtsRateResponseDto;
 
 import lombok.AccessLevel;

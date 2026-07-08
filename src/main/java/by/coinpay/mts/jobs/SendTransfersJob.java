@@ -36,6 +36,7 @@ public class SendTransfersJob {
 
     private static final String SEND_TRANSFERS_JOB = "sendTransfers";
     private static final int MAX_INTERNAL_MESSAGE_LENGTH = 100;
+    private static final String SEND_FAILED_MESSAGE = "Ошибка при отправке оплаты в CoinPay";
 
     TransfersService transfersService;
     PayoutService payoutService;
@@ -108,6 +109,6 @@ public class SendTransfersJob {
                 log.warn("Failed to parse CoinPay error body: {}", parseError.getMessage());
             }
         }
-        return "Ошибка при отправке оплаты в CoinPay";
+        return SEND_FAILED_MESSAGE;
     }
 }

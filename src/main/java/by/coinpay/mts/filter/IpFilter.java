@@ -22,7 +22,7 @@ import static by.coinpay.mts.constants.HttpHeaders.X_FORWARD_FOR;
  */
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class IpFilter implements Filter {
+public class IpFilter implements Filter {       //todo надо ли это вообще возможно надо лучше x-request-id какой нибдуь отлавливать
 
     private static final String IP_MDC_KEY = "ip";
 

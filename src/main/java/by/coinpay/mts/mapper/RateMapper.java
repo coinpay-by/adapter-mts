@@ -3,7 +3,7 @@ package by.coinpay.mts.mapper;
 import by.coinpay.mts.config.CommonMapperConfig;
 import by.coinpay.mts.models.dto.mts.ErrorDto;
 import by.coinpay.mts.models.dto.mts.rates.request.MtsRateRequestDto;
-import by.coinpay.mts.models.dto.coinpay.rates.response.CoinPayRatesResponse;
+import by.coinpay.mts.models.dto.coinpay.rates.CoinPayRatesResponse;
 import by.coinpay.mts.models.dto.mts.rates.response.MtsRateResponseDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

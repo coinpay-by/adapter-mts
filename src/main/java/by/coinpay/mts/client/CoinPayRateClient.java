@@ -1,6 +1,6 @@
 package by.coinpay.mts.client;
 
-import by.coinpay.mts.models.dto.coinpay.rates.response.CoinPayRatesResponse;
+import by.coinpay.mts.models.dto.coinpay.rates.CoinPayRatesResponse;
 import by.coinpay.mts.config.CacheConfig;
 import by.coinpay.mts.config.CoinPayRateClientConfig;
 import org.springframework.cache.annotation.Cacheable;
