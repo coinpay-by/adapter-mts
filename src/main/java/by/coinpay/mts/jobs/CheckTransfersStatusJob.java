@@ -42,7 +42,7 @@ public class CheckTransfersStatusJob {
     @Scheduled(cron = "${mts-adapter.jobs.check-transfers-status.cron}")
     @SchedulerLock(name = CHECK_TRANSFERS_STATUS_JOB)
     public void checkTransfersStatus() {
-        log.info("Джоба '{}' запущена", CHECK_TRANSFERS_STATUS_JOB);
+        log.info("Job '{}' started", CHECK_TRANSFERS_STATUS_JOB);
         long startedAt = System.currentTimeMillis();
 
         List<Transfers> awaiting = transfersService.findAwaitingStatus();
@@ -58,7 +58,7 @@ public class CheckTransfersStatusJob {
         CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
 
         double durationSeconds = (System.currentTimeMillis() - startedAt) / 1000.0;
-        log.info("Джоба '{}' завершена: обновлено: {}, ошибок: {}, время выполнения: {} сек", CHECK_TRANSFERS_STATUS_JOB, updated.get(), failed.get(), durationSeconds);
+        log.info("Job '{}' finished: updated: {}, failed: {}, duration: {} s", CHECK_TRANSFERS_STATUS_JOB, updated.get(), failed.get(), durationSeconds);
     }
 
     private void checkStatus(Transfers transfer, AtomicInteger updated, AtomicInteger failed) {
@@ -69,7 +69,7 @@ public class CheckTransfersStatusJob {
                 updated.incrementAndGet();
             }
         } catch (Exception e) {
-            log.warn("Ошибка опроса статуса перевода {} (coinpayId: {}): {}", transfer.getId(), transfer.getCoinpayTransferId(), e.getMessage(), e);
+            log.warn("Failed to poll transfer status {} (coinpayId: {}): {}", transfer.getId(), transfer.getCoinpayTransferId(), e.getMessage(), e);
             failed.incrementAndGet();
         }
     }

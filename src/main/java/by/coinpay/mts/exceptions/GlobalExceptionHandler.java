@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<MtsErrorResponse> handleException(Exception ex) {
-        log.warn("Непредвиденная ошибка", ex);
+        log.warn("Unexpected error", ex);
         return build(UNEXPECTED_ERROR, null);
     }
 
@@ -35,7 +35,7 @@ public class GlobalExceptionHandler {
         String details = ex.getBindingResult().getFieldErrors().stream()
                         .map(f -> f.getField() + ": " + f.getDefaultMessage())
                         .collect(Collectors.joining("; "));
-        log.warn("Ошибка валидации запроса: {}", details);
+        log.warn("Request validation error: {}", details);
         return build(INCORRECT_REQUEST, details);
     }
 

@@ -1,6 +1,5 @@
 package by.coinpay.mts.config;
 
-import by.coinpay.mts.filter.LoggingFilter;
 import feign.Request;
 import feign.Response;
 import feign.Util;
@@ -47,7 +46,7 @@ public class FeignLogger extends feign.Logger {     //todo посмотреть 
 
                         {a} URI: {}
                         {a} Status: {}
-                        {a} Elapsed: {} мс
+                        {a} Elapsed: {} ms
                         {a} Headers: {}
                         {a} Body: {}""".replace("{a}", RESPONSE_ARROW),
                 response.request().url(), response.status(), elapsedTime, response.headers(), body);

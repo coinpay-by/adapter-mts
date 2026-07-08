@@ -26,7 +26,7 @@ public class InfoService {
         Transfers transfer = transfersService
                 .findByTransactionId(transactionId)
                 .orElseThrow(() -> {
-                    log.warn("Операция с transactionId: {} не найдена", transactionId);
+                    log.warn("Operation with transactionId: {} not found", transactionId);
                     return new EntityNotFoundException(transactionId.toString());
                 });
 

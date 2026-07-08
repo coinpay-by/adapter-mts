@@ -24,12 +24,5 @@ public class MtsApplication {
         SpringApplication.run(MtsApplication.class, args);
     }
 }
-
-//todo убрал форматирование spotles для google пока что можно какой то файла добавить editorconfig  крч надо посмотреть потом
-//todo добавить logback файл
 //todo заголовки и mdc context x-request-id
-//todo swagger прописать
-//todo добавить логирование входящих и исходящих сообщений
-//todo индекс для бд
-//todo проверить настройки времени чтения
 

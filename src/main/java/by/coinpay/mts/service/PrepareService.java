@@ -25,7 +25,7 @@ public class PrepareService {
     @Transactional
     public MtsCreateTransactionResponseDto create(MtsCreateTransactionRequestDto request) {
         if (transfersService.existsByTransactionId(request.transactionId())) {
-            log.warn("Перевод с transactionId: {} уже существует", request.transactionId());
+            log.warn("Transfer with transactionId: {} already exists", request.transactionId());
             throw new TransferAlreadyExistsException(request.transactionId().toString());
         }
 

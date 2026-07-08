@@ -34,8 +34,7 @@ public interface TransfersRepository extends JpaRepository<Transfers, UUID> {
 
     List<Transfers> findByTransactionStatusAndInternalStatusIsNull(TransactionStatus transactionStatus);
 
-    List<Transfers> findByTransactionStatusAndInternalStatus(
-            TransactionStatus transactionStatus, InternalStatus internalStatus);
+    List<Transfers> findByTransactionStatusAndInternalStatus(TransactionStatus transactionStatus, InternalStatus internalStatus);
 
     List<Transfers> findByTransactionDateGreaterThanEqualAndTransactionDateLessThan(OffsetDateTime from, OffsetDateTime to);
 }

@@ -46,7 +46,7 @@ public class SendTransfersJob {
     @Scheduled(cron = "${mts-adapter.jobs.send-transfers.cron}")
     @SchedulerLock(name = SEND_TRANSFERS_JOB)
     public void sendTransfers() {
-        log.info("Джоба '{}' запущена", SEND_TRANSFERS_JOB);
+        log.info("Job '{}' started", SEND_TRANSFERS_JOB);
         long startedAt = System.currentTimeMillis();
 
         List<Transfers> toSend = transfersService.findNotSentCoinPay(TransactionStatus.PROCESSING);
@@ -62,7 +62,7 @@ public class SendTransfersJob {
         CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
 
         double durationSeconds = (System.currentTimeMillis() - startedAt) / 1000.0;
-        log.info("Джоба '{}' завершена: отправлено: {}, ошибок: {}, время выполнения: {} сек", SEND_TRANSFERS_JOB, sent.get(), failed.get(), durationSeconds);
+        log.info("Job '{}' finished: sent: {}, failed: {}, duration: {} s", SEND_TRANSFERS_JOB, sent.get(), failed.get(), durationSeconds);
     }
 
     private void processTransfer(Transfers transfer, AtomicInteger sent, AtomicInteger failed) {
@@ -81,7 +81,7 @@ public class SendTransfersJob {
             transfersService.update(transfer);
             sent.incrementAndGet();
         } catch (Exception e) {
-            log.warn("Ошибка отправки перевода {} в CoinPay: {}", transfer.getId(), e.getMessage(), e);
+            log.warn("Failed to send transfer {} to CoinPay: {}", transfer.getId(), e.getMessage(), e);
             transfer.setInternalStatus(InternalStatus.SEND_FAILED);
             transfer.setTransactionStatus(TransactionStatus.REJECTED);
             transfer.setStatusMessage(StatusMessages.PAYMENT_ERROR);
@@ -105,7 +105,7 @@ public class SendTransfersJob {
                             : message;
                 }
             } catch (Exception parseError) {
-                log.warn("Не удалось разобрать тело ошибки CoinPay: {}", parseError.getMessage());
+                log.warn("Failed to parse CoinPay error body: {}", parseError.getMessage());
             }
         }
         return "Ошибка при отправке оплаты в CoinPay";

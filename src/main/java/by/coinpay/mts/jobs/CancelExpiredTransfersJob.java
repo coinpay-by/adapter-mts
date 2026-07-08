@@ -32,7 +32,7 @@ public class CancelExpiredTransfersJob {
     @Scheduled(cron = "${mts-adapter.jobs.cancel-expired-transfers.cron}")
     @SchedulerLock(name = CANCEL_EXPIRED_TRANSFERS_JOB)
     public void cancelExpiredTransfers() {
-        log.info("Джоба '{}' запущена. Операции в статусе CREATED старше {} минут будут переведены в CANCELED", CANCEL_EXPIRED_TRANSFERS_JOB, expiredTtlMinutes);
+        log.info("Job '{}' started. Operations in CREATED status older than {} minutes will be moved to CANCELED", CANCEL_EXPIRED_TRANSFERS_JOB, expiredTtlMinutes);
 
         long startedAt = System.currentTimeMillis();
 
@@ -40,6 +40,6 @@ public class CancelExpiredTransfersJob {
 
         long durationMs = System.currentTimeMillis() - startedAt;
         double durationSeconds = durationMs / 1000.0;
-        log.info("Джоба '{}' завершена. Переведено из CREATED в CANCELED: {}, время выполнения: {} сек", CANCEL_EXPIRED_TRANSFERS_JOB, cancelled, durationSeconds);
+        log.info("Job '{}' finished. Moved from CREATED to CANCELED: {}, duration: {} s", CANCEL_EXPIRED_TRANSFERS_JOB, cancelled, durationSeconds);
     }
 }

@@ -34,7 +34,7 @@ public class RateService {
 
     public MtsRateResponseDto getRate(MtsRateRequestDto request) {
         if (rateProperty.isHardRateEnable()) {
-            log.info("Включён флаг фиксированного курса, возвращаем {}", rateProperty.getHardRateValue());
+            log.info("Hard rate flag enabled, returning {}", rateProperty.getHardRateValue());
             return rateMapper.toResponse(request, rateProperty.getHardRateValue());
         }
 
@@ -52,7 +52,7 @@ public class RateService {
                     request.currencyTo(),
                     coinPayRateProperties.getMtsPartnerId());
         } catch (Exception e) {
-            log.warn("Ошибка получения курса из CoinPay: {} -> {}: {}", request.currencyFrom(), request.currencyTo(), e.getMessage(), e);
+            log.warn("Failed to fetch rate from CoinPay: {} -> {}: {}", request.currencyFrom(), request.currencyTo(), e.getMessage(), e);
             throw new ExternalException(MtsError.UNEXPECTED_ERROR, "Ошибка при получении курсов");
         }
     }
@@ -62,7 +62,7 @@ public class RateService {
         BigDecimal upperBound = rateProperty.getUpperBound();
 
         if (rate.compareTo(lowerBound) <= 0 || rate.compareTo(upperBound) >= 0) {
-            log.warn("Курс CoinPay вне допустимого диапазона. rate={}, lowerBound={}, upperBound={}", rate, lowerBound, upperBound);
+            log.warn("CoinPay rate is out of allowed range. rate={}, lowerBound={}, upperBound={}", rate, lowerBound, upperBound);
             throw new RatesException(MtsError.OTHER, "Ошибка при получении курса");
         }
     }
