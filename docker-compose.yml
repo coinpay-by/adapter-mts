@@ -1,6 +1,8 @@
 networks:
   mts-coinpay-net:
     driver: bridge
+  dokploy-network:
+    external: true
 
 volumes:
   mts-api-logs:
@@ -64,6 +66,7 @@ services:
       - mts-api-logs:/app/logs
     networks:
       - mts-coinpay-net
+      - dokploy-network
   vector:
     image: timberio/vector:0.42.0-alpine
     container_name: mts-vector
