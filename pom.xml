@@ -67,6 +67,12 @@
 			<version>${springdoc.version}</version>
 		</dependency>
 
+		<!-- OkHttp-движок для Feign -->
+		<dependency>
+			<groupId>io.github.openfeign</groupId>
+			<artifactId>feign-okhttp</artifactId>
+		</dependency>
+
 		<!-- cache -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

@@ -19,6 +19,8 @@ spring:
           time_zone: UTC
   cloud:
     openfeign:
+      okhttp:
+        enabled: ${FEIGN_OKHTTP_ENABLED:true}
       client:
         config:
           # общие для всех Feign-клиентов (время соединения и время чтения)
