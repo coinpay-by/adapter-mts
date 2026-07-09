@@ -4,6 +4,7 @@ import by.coinpay.mts.enums.InternalStatus;
 import by.coinpay.mts.enums.TransactionStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
@@ -15,17 +16,19 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 /** Заказ Multitransfer. Поля соответствуют таблице mt_transaction. */
 @Entity
 @Table(name = "transfers")
+@EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
 @Builder
@@ -88,7 +91,7 @@ public class Transfers {
     private BigDecimal rate;
 
     @Column(name = "transaction_date")
-    private OffsetDateTime transactionDate;
+    private LocalDateTime transactionDate;
 
     @Column(name = "first_name")
     private String firstName;
@@ -141,11 +144,11 @@ public class Transfers {
     @Column(name = "status_message")
     private String statusMessage;
 
-    @CreationTimestamp
+    @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
-    private OffsetDateTime createdAt;
+    private LocalDateTime createdAt;
 
-    @UpdateTimestamp
+    @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
-    private OffsetDateTime updatedAt;
+    private LocalDateTime updatedAt;
 }

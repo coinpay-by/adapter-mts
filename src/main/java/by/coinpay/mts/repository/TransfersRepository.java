@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -30,11 +30,11 @@ public interface TransfersRepository extends JpaRepository<Transfers, UUID> {
     int updateStatusForExpired(
             @Param("fromStatus") TransactionStatus fromStatus,
             @Param("toStatus") TransactionStatus toStatus,
-            @Param("threshold") OffsetDateTime threshold);
+            @Param("threshold") LocalDateTime threshold);
 
     List<Transfers> findByTransactionStatusAndInternalStatusIsNull(TransactionStatus transactionStatus);
 
     List<Transfers> findByTransactionStatusAndInternalStatus(TransactionStatus transactionStatus, InternalStatus internalStatus);
 
-    List<Transfers> findByTransactionDateGreaterThanEqualAndTransactionDateLessThan(OffsetDateTime from, OffsetDateTime to);
+    List<Transfers> findByTransactionDateGreaterThanEqualAndTransactionDateLessThan(LocalDateTime from, LocalDateTime to);
 }

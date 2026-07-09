@@ -19,11 +19,11 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 
 @Mapper(
         config = CommonMapperConfig.class,
-        imports = {ErrorDto.class, TransactionStatus.class, OffsetDateTime.class})
+        imports = {ErrorDto.class, TransactionStatus.class, LocalDateTime.class})
 public interface TransfersMapper {
 
     int MAX_ZIP_LENGTH = 20;
@@ -44,7 +44,7 @@ public interface TransfersMapper {
     @Mapping(target = "feeAmount", source = "money.fee.amount")
     @Mapping(target = "feeCurrency", source = "money.fee.currencyCode")
     @Mapping(target = "rate", source = "money.rate")
-    @Mapping(target = "transactionDate", expression = "java(OffsetDateTime.now())")
+    @Mapping(target = "transactionDate", expression = "java(LocalDateTime.now())")
     @Mapping(target = "firstName", source = "beneficiary.firstName", qualifiedByName = "transliterate")
     @Mapping(target = "lastName", source = "beneficiary.lastName", qualifiedByName = "transliterate")
     @Mapping(target = "middleName", source = "beneficiary.middleName", qualifiedByName = "transliterate")

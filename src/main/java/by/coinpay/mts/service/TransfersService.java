@@ -13,8 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -54,8 +53,8 @@ public class TransfersService {
     }
 
     public List<Transfers> findByDate(LocalDate date) {
-        OffsetDateTime from = date.atStartOfDay().atOffset(ZoneOffset.UTC);
-        OffsetDateTime to = from.plusDays(ONE_DAY);
+        LocalDateTime from = date.atStartOfDay();
+        LocalDateTime to = from.plusDays(ONE_DAY);
         return transfersRepository.findByTransactionDateGreaterThanEqualAndTransactionDateLessThan(from, to);
     }
 
@@ -74,7 +73,7 @@ public class TransfersService {
      */
     @Transactional
     public int cancelExpiredCreated(int ttlMinutes) {
-        OffsetDateTime threshold = OffsetDateTime.now().minusMinutes(ttlMinutes);
+        LocalDateTime threshold = LocalDateTime.now().minusMinutes(ttlMinutes);
         return transfersRepository.updateStatusForExpired(TransactionStatus.CREATED, TransactionStatus.CANCELED, threshold);
     }
 }
