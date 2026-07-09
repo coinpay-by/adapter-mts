@@ -10,8 +10,14 @@ import by.coinpay.mts.models.dto.mts.transfer.response.MtsCreateTransactionRespo
 import by.coinpay.mts.models.dto.mts.status.MtsStatusResponseDto;
 import by.coinpay.mts.models.dto.mts.registry.MtsRegistryResponseDto;
 import by.coinpay.mts.models.entity.Transfers;
+import by.coinpay.mts.utils.AddressParser;
+import by.coinpay.mts.utils.AddressParser.ParsedAddress;
+import by.coinpay.mts.utils.TransliterationUtil;
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.Named;
 
 import java.time.OffsetDateTime;
 
@@ -19,6 +25,8 @@ import java.time.OffsetDateTime;
         config = CommonMapperConfig.class,
         imports = {ErrorDto.class, TransactionStatus.class, OffsetDateTime.class})
 public interface TransfersMapper {
+
+    int MAX_ZIP_LENGTH = 20;
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "transactionId", source = "transactionId")
@@ -37,27 +45,65 @@ public interface TransfersMapper {
     @Mapping(target = "feeCurrency", source = "money.fee.currencyCode")
     @Mapping(target = "rate", source = "money.rate")
     @Mapping(target = "transactionDate", expression = "java(OffsetDateTime.now())")
-    @Mapping(target = "firstName", source = "beneficiary.firstName")
-    @Mapping(target = "lastName", source = "beneficiary.lastName")
-    @Mapping(target = "middleName", source = "beneficiary.middleName")
+    @Mapping(target = "firstName", source = "beneficiary.firstName", qualifiedByName = "transliterate")
+    @Mapping(target = "lastName", source = "beneficiary.lastName", qualifiedByName = "transliterate")
+    @Mapping(target = "middleName", source = "beneficiary.middleName", qualifiedByName = "transliterate")
     @Mapping(target = "birthDate", source = "beneficiary.birthDate", dateFormat = "yyyy-MM-dd")
     @Mapping(target = "phone", source = "beneficiary.phoneNumber")
-    @Mapping(target = "senderFirstName", source = "sender.firstName")
-    @Mapping(target = "senderLastName", source = "sender.lastName")
-    @Mapping(target = "senderMiddleName", source = "sender.middleName")
+    @Mapping(target = "senderFirstName", source = "sender.firstName", qualifiedByName = "transliterate")
+    @Mapping(target = "senderLastName", source = "sender.lastName", qualifiedByName = "transliterate")
+    @Mapping(target = "senderMiddleName", source = "sender.middleName", qualifiedByName = "transliterate")
     @Mapping(target = "senderBirthDate", source = "sender.birthDate")
-    @Mapping(target = "senderFullAddress", source = "sender.addresses.registrationAddress.full")
     @Mapping(target = "senderCountry", source = "sender.countryOfResidence")
-    @Mapping(target = "senderState", source = "sender.addresses.registrationAddress.region")
-    @Mapping(target = "senderCity", source = "sender.addresses.registrationAddress.city")
-    @Mapping(target = "senderStreet", source = "sender.addresses.registrationAddress.street")
-    @Mapping(target = "senderZip", source = "sender.addresses.registrationAddress.zipCode")
+    @Mapping(target = "senderFullAddress", ignore = true)
+    @Mapping(target = "senderState", ignore = true)
+    @Mapping(target = "senderCity", ignore = true)
+    @Mapping(target = "senderStreet", ignore = true)
+    @Mapping(target = "senderZip", ignore = true)
     @Mapping(target = "coinpayTransferId", ignore = true)
     @Mapping(target = "statusMessage", ignore = true)
     @Mapping(target = "internalMessage", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     Transfers toEntity(MtsCreateTransactionRequestDto request);
+
+    @Named("transliterate")
+    default String transliterate(String value) {
+        return TransliterationUtil.transliterate(value);
+    }
+
+    /**
+     * Разбирает полный адрес отправителя ({@code registrationAddress.full}) на компоненты
+     * и раскладывает их по колонкам с транслитерацией.
+     */
+    @AfterMapping
+    default void fillSenderAddress(MtsCreateTransactionRequestDto request, @MappingTarget Transfers.TransfersBuilder builder) {
+        String full = extractFullAddress(request);
+        if (full == null) {
+            return;
+        }
+        ParsedAddress address = AddressParser.parse(full);
+        builder.senderFullAddress(TransliterationUtil.transliterate(full));
+        builder.senderState(TransliterationUtil.transliterate(address.state()));
+        builder.senderCity(TransliterationUtil.transliterate(address.city()));
+        builder.senderStreet(TransliterationUtil.transliterate(address.street()));
+        builder.senderZip(truncate(TransliterationUtil.transliterate(address.zip())));
+    }
+
+    private String truncate(String value) {
+        if (value == null) {
+            return null;
+        }
+        return value.length() > TransfersMapper.MAX_ZIP_LENGTH ? value.substring(0, TransfersMapper.MAX_ZIP_LENGTH) : value;
+    }
+
+    private String extractFullAddress(MtsCreateTransactionRequestDto request) {
+        if (request.sender() == null || request.sender().addresses() == null
+                || request.sender().addresses().registrationAddress() == null) {
+            return null;
+        }
+        return request.sender().addresses().registrationAddress().full();
+    }
 
     @Mapping(target = "transactionId", source = "transfer.transactionId")
     @Mapping(target = "recordType", source = "transfer.recordType")
