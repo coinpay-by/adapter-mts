@@ -20,6 +20,7 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Mapper(
         config = CommonMapperConfig.class,
@@ -27,6 +28,12 @@ import java.time.LocalDateTime;
 public interface TransfersMapper {
 
     int MAX_ZIP_LENGTH = 20;
+
+    DateTimeFormatter TRANSACTION_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
+    default String formatTransactionDate(LocalDateTime dateTime) {
+        return dateTime != null ? dateTime.format(TRANSACTION_DATE_FORMATTER) : null;
+    }
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "transactionId", source = "transactionId")
@@ -110,7 +117,7 @@ public interface TransfersMapper {
     @Mapping(target = "serviceId", source = "transfer.serviceId")
     @Mapping(target = "externalTransactionNum", expression = "java(transfer.getId() != null ? transfer.getId().toString() : null)")
     @Mapping(target = "transactionStatus", expression = "java(transfer.getTransactionStatus().name())")
-    @Mapping(target = "transactionDate", expression = "java(transfer.getTransactionDate() != null ? transfer.getTransactionDate().toString() : null)")
+    @Mapping(target = "transactionDate", expression = "java(formatTransactionDate(transfer.getTransactionDate()))")
     @Mapping(target = "countryCode", source = "transfer.countryCode")
     @Mapping(target = "beneficiaryAccountNumber", source = "transfer.accountNumber")
     @Mapping(target = "beneficiaryPhoneNumber", source = "transfer.phone")
@@ -123,7 +130,7 @@ public interface TransfersMapper {
     @Mapping(target = "transactionId", source = "transactionId")
     @Mapping(target = "transactionState", expression = "java(transfer.getTransactionStatus().name())")
     @Mapping(target = "reason", source = "statusMessage")
-    @Mapping(target = "paymentDateUpdated", expression = "java(transfer.getUpdatedAt() != null ? transfer.getUpdatedAt().toString() : null)")
+    @Mapping(target = "paymentDateUpdated", expression = "java(formatTransactionDate(transfer.getUpdatedAt()))")
     @Mapping(target = "error", expression = "java(ErrorDto.success())")
     MtsStatusResponseDto toStatusResponse(Transfers transfer);
 
@@ -132,7 +139,7 @@ public interface TransfersMapper {
     @Mapping(target = "serviceId", source = "serviceId")
     @Mapping(target = "externalTransactionNum", expression = "java(transfer.getId() != null ? transfer.getId().toString() : null)")
     @Mapping(target = "transactionStatus", expression = "java(transfer.getTransactionStatus().name())")
-    @Mapping(target = "transactionDate", expression = "java(transfer.getTransactionDate() != null ? transfer.getTransactionDate().toString() : null)")
+    @Mapping(target = "transactionDate", expression = "java(formatTransactionDate(transfer.getTransactionDate()))")
     @Mapping(target = "countryCode", source = "countryCode")
     @Mapping(target = "money", expression = "java(toMoney(transfer))")
     MtsRegistryResponseDto.Transaction toRegistryTransaction(Transfers transfer);

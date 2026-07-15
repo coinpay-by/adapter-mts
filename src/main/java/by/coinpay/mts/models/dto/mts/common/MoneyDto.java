@@ -1,5 +1,6 @@
 package by.coinpay.mts.models.dto.mts.common;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.Valid;
@@ -13,6 +14,6 @@ public record MoneyDto(
         @Valid AmountDto settlementMoney,
         @Valid @NotNull AmountDto withdrawMoney,
         @Valid AmountDto fee,
-        @NotNull BigDecimal rate
+        @JsonFormat(shape = JsonFormat.Shape.STRING) @NotNull BigDecimal rate
 ) {
 }
